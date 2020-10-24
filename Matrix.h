@@ -1,5 +1,6 @@
 #pragma once 
 #include <iostream>
+#include <stdlib.h>     /* srand, rand */
 
 using namespace std;
 
@@ -24,10 +25,16 @@ class Matrix{
         void print();
         int max();
         //---------operators overloading-----------------
+
         // folowwing operator can be used as
         // Matrix *m3 = *m1 + *m2; 
-        //whenever m1, m2 are dinamic
+        // whenever m1, m2 are dinamic
         Matrix* operator + (Matrix const &M); // sum of matrices
+
+        // folowwing operator can be used as
+        // Matrix *m3 = *m1 - *m2; 
+        // whenever m1, m2 are dinamic
+        Matrix* operator - (Matrix const &M); // subtraction of matrices
         
         
 }; 

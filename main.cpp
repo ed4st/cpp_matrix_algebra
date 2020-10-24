@@ -1,23 +1,33 @@
 #include "Matrix.h"
 
 int main(){
-    Matrix m1(10,10); //static
 
-    m1.random_matrix();
-    m1.print();
-    cout << "max number of the matrix 1: " << m1.max() <<"\n";
-
-    Matrix *m2; // dinamic
-    m2 = new Matrix(10,10);
-
+    Matrix *m1 = new Matrix(10,10);
+    Matrix *m2 = new Matrix(10,10);
+    
+    //generating random matrices
+    m1->random_matrix();
     m2->random_matrix();
+    
+    
+    //printing matrices:
+
+    cout << "-----------Matrix 1-----------\n";
+    m1->print();
+
+    cout << "-----------Matrix 2-----------\n";
     m2->print();
-    cout << "max number of the matrix 2: " << m2->max() <<"\n";
 
-
-    Matrix *m3 = *m2 + *m2;
+    //here we sum
+    Matrix *m3 = *m1 + *m2;
     cout << "sum of matrices:\n";
     m3->print();
+
+    //here we subtract m2 to m1
+    m3 = *m1 - *m2;
+    cout << "subtraction of matrices:\n";
+    m3->print();
+
 
     delete m2;
     return 0;
