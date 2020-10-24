@@ -1,7 +1,7 @@
 #include "Matrix.h"
 
 int main(){
-    Matrix m1(3,3); //static
+    Matrix m1(10,10); //static
 
     m1.random_matrix();
     m1.print();
@@ -15,6 +15,9 @@ int main(){
     cout << "max number of the matrix 2: " << m2->max() <<"\n";
 
 
+    Matrix *m3 = *m2 + *m2;
+    cout << "sum of matrices:\n";
+    m3->print();
 
     delete m2;
     return 0;

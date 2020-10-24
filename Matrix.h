@@ -5,6 +5,7 @@ using namespace std;
 
 class Matrix{
     private:
+        //------------Attributtes--------------------------
         int _nrows;
         int _ncols;
         int **_A; //matrix A
@@ -15,10 +16,18 @@ class Matrix{
         
         int get_ncols();
         void set_ncols(int ncols);
-        
-        Matrix(int nrows, int ncols); // constructor
+        //----------constructors and destructors
+        Matrix(int nrows, int ncols);
         ~Matrix();     
+        //-----------Methods-----------------------------
         void random_matrix();
         void print();
         int max();
+        //---------operators overloading-----------------
+        // folowwing operator can be used as
+        // Matrix *m3 = *m1 + *m2; 
+        //whenever m1, m2 are dinamic
+        Matrix* operator + (Matrix const &M); // sum of matrices
+        
+        
 }; 
