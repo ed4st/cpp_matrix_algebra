@@ -1,4 +1,21 @@
 #include "Matrix.h"
+//---------------getters and setters--------------
+int Matrix::get_ncols(){
+    return this->_ncols;
+}
+
+int Matrix::get_nrows(){
+    return this->_nrows;
+}
+
+void Matrix::set_ncols(int ncols){
+    this->_ncols = ncols;
+}
+
+void Matrix::set_ncols(int nrows){
+    this->_nrows = nrows;
+}
+
 
 Matrix::Matrix(int nrows, int ncols){
     _nrows = nrows;
@@ -17,6 +34,7 @@ Matrix::~Matrix(){
     delete[] _A;
 }
 
+//here we genetate a matrix with values between 0 and 99
 void Matrix::random_matrix(){
     for (int i = 0; i < _nrows; i++)
     {
@@ -51,4 +69,3 @@ int Matrix::max(){
     }
     return max;
 }
-
