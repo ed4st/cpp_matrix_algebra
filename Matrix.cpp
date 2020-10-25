@@ -74,6 +74,18 @@ int Matrix::max(){
     return max;
 }
 
+Matrix* Matrix::traspose(){
+    Matrix *S = new Matrix(_ncols, _nrows);
+    for (int i = 0; i < _nrows; i++)
+    {
+        for (int j = 0; j < _ncols; j++)
+        {
+            S->_A[j][i] = _A[i][j];
+        }            
+    }
+    return S;    
+}
+
 //---------------------operators overloading-------------
 Matrix* Matrix::operator+(Matrix const &M){
 

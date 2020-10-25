@@ -24,6 +24,7 @@ class Matrix{
         void random_matrix();
         void print();
         int max();
+        Matrix * traspose();
         Matrix * inverse();
         //---------operators overloading-----------------
 

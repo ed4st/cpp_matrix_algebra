@@ -33,6 +33,10 @@ int main(){
     cout << "Multiplication of matrices:\n";
     m3->print();
     
+    cout << "Traspose of matrix 2:\n";
+    m2->traspose()->print();
+
+    
 
     delete m2;
     return 0;
