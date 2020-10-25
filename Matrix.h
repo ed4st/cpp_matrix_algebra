@@ -17,15 +17,18 @@ class Matrix{
         
         int get_ncols();
         void set_ncols(int ncols);
+
         //----------constructors and destructors
         Matrix(int nrows, int ncols);
         ~Matrix();     
+
         //-----------Methods-----------------------------
         void random_matrix();
         void print();
-        int max();
         Matrix * traspose();
         Matrix * inverse();
+
+
         //---------operators overloading-----------------
 
         /*  folowwing operator can be used as
