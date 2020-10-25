@@ -75,27 +75,46 @@ int Matrix::max(){
 }
 //---------------------operators overloading-------------
 Matrix* Matrix::operator+(Matrix const &M){
+
     Matrix *S = new Matrix(_nrows, _ncols); //S is the result of the sum
 
-    for (int i = 0; i < _nrows; i++)
-    {
-        for (int j = 0; j < _ncols; j++)
+    // first, we verify if the dimension of two matrices are equal
+    if((_ncols == M._ncols) && (_nrows == M._nrows)){
+        for (int i = 0; i < _nrows; i++)
         {
-            S->_A[i][j] = _A[i][j] + M._A[i][j];
+            for (int j = 0; j < _ncols; j++)
+            {
+                S->_A[i][j] = _A[i][j] + M._A[i][j];
+            }
+                
         }
-            
+    }
+    else
+    {
+        cout<<"Dimension of matrices are different.\n";
+        S->_A = NULL;
     }
     return S;
 }
 
 Matrix* Matrix::operator-(Matrix const &M){
     Matrix *S = new Matrix(_nrows, _ncols); //S is the result of the subtraction
-    for (int i = 0; i < _nrows; i++)
-    {
-        for (int j = 0; j < _ncols; j++)
+    
+    // first, we verify if the dimension of two matrices are equal
+    if((_ncols == M._ncols) && (_nrows == M._nrows)){
+        for (int i = 0; i < _nrows; i++)
         {
-            S->_A[i][j] = _A[i][j] - M._A[i][j];
+            for (int j = 0; j < _ncols; j++)
+            {
+                S->_A[i][j] = _A[i][j] - M._A[i][j];
+            }
+                
         }
+    }
+    else
+    {
+        cout<<"Dimension of matrices are different.\n";
+        S->_A = NULL;
     }
     return S;
 }
