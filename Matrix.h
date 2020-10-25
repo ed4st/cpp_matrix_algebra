@@ -9,7 +9,7 @@ class Matrix{
         //------------Attributtes--------------------------
         int _nrows;
         int _ncols;
-        int **_A; //matrix A
+        double **_A; //matrix A
     public:
         //-----------getters and setters-----------------
         int get_nrows();
@@ -24,17 +24,23 @@ class Matrix{
         void random_matrix();
         void print();
         int max();
+        Matrix * inverse();
         //---------operators overloading-----------------
 
-        // folowwing operator can be used as
-        // Matrix *m3 = *m1 + *m2; 
-        // whenever m1, m2 are dinamic
+        /*  folowwing operator can be used as
+            Matrix *m3 = *m1 + *m2; 
+            whenever m1, m2 are dinamic*/
         Matrix* operator + (Matrix const &M); // sum of matrices
 
-        // folowwing operator can be used as
-        // Matrix *m3 = *m1 - *m2; 
-        // whenever m1, m2 are dinamic
+        /*  folowwing operator can be used as
+            Matrix *m3 = *m1 - *m2; 
+            whenever m1, m2 are dinamic */
         Matrix* operator - (Matrix const &M); // subtraction of matrices
+        
+        /*  folowwing operator can be used as
+            Matrix *m3 = (*m1) * (*m2); 
+            whenever m1, m2 are dinamic */
+        Matrix* operator * (Matrix const &M); // subtraction of matrices
         
         
 }; 

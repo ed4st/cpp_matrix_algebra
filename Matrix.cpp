@@ -20,10 +20,10 @@ void Matrix::set_nrows(int nrows){
 Matrix::Matrix(int nrows, int ncols){
     _nrows = nrows;
     _ncols = ncols;
-    _A = new int *[nrows];
+    _A = new double *[nrows];
     for (int i = 0; i < nrows; i++)
     {
-        _A[i] = new int[ncols];
+        _A[i] = new double[ncols];
     }
 }
 Matrix::~Matrix(){
@@ -38,8 +38,6 @@ Matrix::~Matrix(){
 
 //here we genetate a matrix with values between 0 and 99
 void Matrix::random_matrix(){
-
-    //srand(time(NULL));
     for (int i = 0; i < _nrows; i++)
     {
         for (int j = 0; j < _ncols; j++)
@@ -49,14 +47,16 @@ void Matrix::random_matrix(){
     }                            
 }
 void Matrix::print(){
-    for (int i = 0; i < _nrows; i++)
-    {
-        for (int j = 0; j < _ncols; j++)
+    if(_A !=NULL){
+        for (int i = 0; i < _nrows; i++)
         {
-            cout << _A[i][j] << "\t";
+            for (int j = 0; j < _ncols; j++)
+            {
+                cout << _A[i][j] << "\t";
+            }
+            cout << endl;
         }
-        cout << endl;
-    }   
+    }       
 }
 
 int Matrix::max(){
@@ -73,6 +73,7 @@ int Matrix::max(){
     }
     return max;
 }
+
 //---------------------operators overloading-------------
 Matrix* Matrix::operator+(Matrix const &M){
 
@@ -114,6 +115,35 @@ Matrix* Matrix::operator-(Matrix const &M){
     else
     {
         cout<<"Dimension of matrices are different.\n";
+        S->_A = NULL;
+    }
+    return S;
+}
+
+
+Matrix* Matrix::operator*(Matrix const &M){
+    Matrix *S = new Matrix(_nrows, M._ncols); //S is the result of the multiplication
+    
+    // first, we verify if the dimension is right
+    if(this->_ncols == M._nrows){
+        for (int i = 0; i < _nrows; i++)
+        {
+            for (int j = 0; j < M._ncols; j++)
+            {
+                double sum =0;
+                for (int k = 0; k < _ncols; k++)
+                {
+                    sum += _A[i][k]*M._A[k][j];
+                }
+                
+                S->_A[i][j] = sum;
+            }
+                
+        }
+    }
+    else
+    {
+        cout<<"Number of columns and number of rows doesn't match.\n";
         S->_A = NULL;
     }
     return S;

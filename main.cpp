@@ -2,10 +2,11 @@
 
 int main(){
 
-    Matrix *m1 = new Matrix(10,10);
-    Matrix *m2 = new Matrix(10,10);
+    Matrix *m1 = new Matrix(2,3);
+    Matrix *m2 = new Matrix(3,4);
     
     //generating random matrices
+    srand(time(NULL));
     m1->random_matrix();
     m2->random_matrix();
     
@@ -22,12 +23,16 @@ int main(){
     Matrix *m3 = *m1 + *m2;
     cout << "sum of matrices:\n";
     m3->print();
-
+    
     //here we subtract m2 to m1
     m3 = *m1 - *m2;
     cout << "subtraction of matrices:\n";
     m3->print();
-
+    
+    m3 = (*m1) * (*m2);
+    cout << "Multiplication of matrices:\n";
+    m3->print();
+    
 
     delete m2;
     return 0;
