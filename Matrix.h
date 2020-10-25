@@ -26,6 +26,9 @@ class Matrix{
         void random_matrix();
         void print();
         Matrix * traspose();
+
+        //inverse matrix returns NULL if it's not possible
+        //to carry out inverse calculation
         Matrix * inverse();
 
 

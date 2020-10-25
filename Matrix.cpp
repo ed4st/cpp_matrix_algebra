@@ -59,20 +59,6 @@ void Matrix::print(){
     }       
 }
 
-int Matrix::max(){
-    int max = INT8_MIN;
-    for (int i = 0; i < _nrows; i++)
-    {
-        for (int j = 0; j < _ncols; j++)
-        {
-            if(max <= _A[i][j]){
-                max = _A[i][j];
-            }
-            
-        }
-    }
-    return max;
-}
 
 Matrix* Matrix::traspose(){
     Matrix *S = new Matrix(_ncols, _nrows);
@@ -85,6 +71,26 @@ Matrix* Matrix::traspose(){
     }
     return S;    
 }
+
+Matrix* Matrix::inverse(){
+    if(_ncols != _nrows){
+        cout << "Matrix is not square.\n";
+        return NULL;
+    }
+    else
+    {
+        //first, we set precision to get 2 floating point values
+        
+        //following matrix is the aumented identity matrix
+        Matrix *I = new Matrix(_nrows, _ncols);
+
+        
+
+        return I;
+    }
+    
+}
+
 
 //---------------------operators overloading-------------
 Matrix* Matrix::operator+(Matrix const &M){
@@ -142,6 +148,7 @@ Matrix* Matrix::operator*(Matrix const &M){
         {
             for (int j = 0; j < M._ncols; j++)
             {
+                //definig the sum as usual column-row product 
                 double sum =0;
                 for (int k = 0; k < _ncols; k++)
                 {
