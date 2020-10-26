@@ -80,6 +80,7 @@ int main(){
             Matrix *M2 = new Matrix(m2,n2);
             
             //filling matrix randomly
+            srand(time(NULL));
             M1->random_matrix();
             M2->random_matrix();
 
@@ -94,15 +95,83 @@ int main(){
             delete M1,M2;
             break;
         }
-        default:
-            if(option == 0){
-                cout << "Bye.\n";
-            }
-            else{
-                cout<<"An error occurred :/\n";
-            }
+        case 2:
+        {
+            int m1, n1, m2, n2;
+            cout << "Enter the number of rows of matrix 1: ";
+            cin >> m1;
+            cout << endl;
+            cout << "Enter the number of columns of matrix 1: ";
+            cin >> n1;
+            cout << endl;
+            cout << "Enter the number of rows of matrix 2: ";
+            cin >> m2;
+            cout << endl;
+            cout << "Enter the number of columns of matrix 2: ";
+            cin >> n2;
+            cout << endl;
+
+            //creating matrices
+            Matrix *M1 = new Matrix(m1,n1);
+            Matrix *M2 = new Matrix(m2,n2);
+            
+            //filling matrix randomly
+            srand(time(NULL));
+            M1->random_matrix();
+            M2->random_matrix();
+
+            cout << "*********Following matrices are randomly generated*********\n";
+            cout << "---------Matrix 1---------\n";
+            M1->print();
+            cout << "---------Matrix 2---------\n";
+            M2->print();
+            cout << "---------Subtraction---------\n";
+            (*M1 - *M2)->print();
+
+            delete M1,M2;
             break;
         }
+        case 3:
+        {
+            int m1, n1, m2, n2;
+            cout << "Enter the number of rows of matrix 1: ";
+            cin >> m1;
+            cout << endl;
+            cout << "Enter the number of columns of matrix 1: ";
+            cin >> n1;
+            cout << endl;
+            cout << "Enter the number of rows of matrix 2: ";
+            cin >> m2;
+            cout << endl;
+            cout << "Enter the number of columns of matrix 2: ";
+            cin >> n2;
+            cout << endl;
+
+            //creating matrices
+            Matrix *M1 = new Matrix(m1,n1);
+            Matrix *M2 = new Matrix(m2,n2);
+            
+            //filling matrix randomly
+            srand(time(NULL));
+            M1->random_matrix();
+            M2->random_matrix();
+
+            cout << "*********Following matrices are randomly generated*********\n";
+            cout << "---------Matrix 1---------\n";
+            M1->print();
+            cout << "---------Matrix 2---------\n";
+            M2->print();
+            cout << "---------Multiplication---------\n";
+            (((*M1) * (*M2)) != NULL)?  (*M1 - *M2)->print() :  cout << "Product not computed.\n";
+
+            delete M1,M2;
+            break;
+        }
+        default:
+            cout<<"An error occurred. Key not detected, try again.\n";
+            break;
+        }
+
 
 
     } while (option != 0);
