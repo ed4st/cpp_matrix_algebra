@@ -162,11 +162,67 @@ int main(){
             cout << "---------Matrix 2---------\n";
             M2->print();
             cout << "---------Multiplication---------\n";
-            (((*M1) * (*M2)) != NULL)?  (*M1 - *M2)->print() :  cout << "Product not computed.\n";
+            ((*M1) * (*M2))->print();
+            
 
             delete M1,M2;
             break;
         }
+        case 4:
+        {
+            int m1, n1;
+            cout << "Enter the number of rows of matrix: ";
+            cin >> m1;
+            cout << endl;
+            cout << "Enter the number of columns of matrix: ";
+            cin >> n1;
+            cout << endl;
+
+            //creating matrix
+            Matrix *M = new Matrix(m1,n1);
+            
+            //filling matrix randomly
+            srand(time(NULL));
+            M->random_matrix();
+
+            cout << "*********Following matrix is randomly generated*********\n";
+            cout << "---------Matrix---------\n";
+            M->print();
+            cout << "---------Traspose---------\n";
+            M->traspose()->print();
+            
+            delete M;
+            break;
+        }
+        case 5:
+        {
+            int m1, n1;
+            cout << "Enter the number of rows of matrix: ";
+            cin >> m1;
+            cout << endl;
+            cout << "Enter the number of columns of matrix: ";
+            cin >> n1;
+            cout << endl;
+
+            //creating matrix
+            Matrix *M = new Matrix(m1,n1);
+            
+            //filling matrix randomly
+            srand(time(NULL));
+            M->random_matrix();
+
+            cout << "*********Following matrix is randomly generated*********\n";
+            cout << "---------Matrix---------\n";
+            M->print();
+            cout << "---------Inverse---------\n";
+            M->inverse()->print();
+            
+            delete M;
+            break;
+        }
+        case 0:
+            cout << "Bye c:\n";
+            break;
         default:
             cout<<"An error occurred. Key not detected, try again.\n";
             break;
