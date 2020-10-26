@@ -75,7 +75,7 @@ Matrix* Matrix::traspose(){
 
 Matrix* Matrix::inverse(){
     if(_ncols != _nrows){
-        cout << "Matrix is not square.\n";
+        cout << "Matrix is not square.\n\n";
         return NULL;
     }
     else
@@ -190,7 +190,7 @@ Matrix* Matrix::operator+(Matrix const &M){
     }
     else
     {
-        cout<<"Dimension of matrices are different.\n";
+        cout<<"Dimension of matrices are different.\n\n";
         S->_A = NULL;
     }
     return S;
@@ -212,7 +212,7 @@ Matrix* Matrix::operator-(Matrix const &M){
     }
     else
     {
-        cout<<"Dimension of matrices are different.\n";
+        cout<<"Dimension of matrices are different.\n\n";
         S->_A = NULL;
     }
     return S;
@@ -242,7 +242,7 @@ Matrix* Matrix::operator*(Matrix const &M){
     }
     else
     {
-        cout<<"Number of columns and number of rows doesn't match.\n";
+        cout<<"Number of columns and number of rows doesn't match.\n\n";
         S->_A = NULL;
     }
     return S;

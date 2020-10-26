@@ -1,47 +1,7 @@
 #include "Matrix.h"
 
 int main(){
-    /*
-    Matrix *m1 = new Matrix(2,2);
-    Matrix *m2 = new Matrix(2,2);
     
-    //generating random matrices
-    srand(time(NULL));
-    m1->random_matrix();
-    m2->random_matrix();
-    
-    
-    //printing matrices:
-
-    cout << "-----------Matrix 1-----------\n";
-    m1->print();
-
-    cout << "-----------Matrix 2-----------\n";
-    m2->print();
-
-    //here we sum
-    Matrix *m3 = *m1 + *m2;
-    cout << "sum of matrices:\n";
-    m3->print();
-    
-    //here we subtract m2 to m1
-    m3 = *m1 - *m2;
-    cout << "subtraction of matrices:\n";
-    m3->print();
-    
-    m3 = (*m1) * (*m2);
-    cout << "Multiplication of matrices:\n";
-    m3->print();
-    
-    cout << "Traspose of matrix 2:\n";
-    m2->traspose()->print();
-
-    cout << "Inverse of matrix 2:\n";
-    m2->inverse()->print();
-    
-
-    delete m2;*/
-
     // Menu
     int option = 0;
     do
@@ -53,7 +13,7 @@ int main(){
         cout << "   3. Product of two matrices.\n";
         cout << "   4. Traspose a matrix.\n";
         cout << "   5. Inverse of a matrix.\n";
-        cout << "   0. Exit.\n";
+        cout << "   6. Exit.\n";
         cout << ">> ";
         cin >> option;
         cout << endl;
@@ -215,25 +175,30 @@ int main(){
             cout << "---------Matrix---------\n";
             M->print();
             cout << "---------Inverse---------\n";
-            M->inverse()->print();
-            
+            if(M->inverse() != NULL){
+                M->inverse()->print();
+            }else{
+                cout << "Inverse cannot be computed :c\n\n";
+            }        
+
             delete M;
             break;
         }
-        case 0:
+        case 6:
+        {
             cout << "Bye c:\n";
             break;
+        }
         default:
+        {
+            option = 6;
             cout<<"An error occurred. Key not detected, try again.\n";
             break;
         }
-
-
-
-    } while (option != 0);
+        }
+    } while (option != 6);
     
     
 
     return 0;
 }
-//compilación por terminal
