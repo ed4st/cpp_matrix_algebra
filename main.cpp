@@ -1,7 +1,7 @@
 #include "Matrix.h"
 
 int main(){
-
+    /*
     Matrix *m1 = new Matrix(2,2);
     Matrix *m2 = new Matrix(2,2);
     
@@ -40,7 +40,7 @@ int main(){
     m2->inverse()->print();
     
 
-    delete m2;
+    delete m2;*/
 
     // Menu
     int option = 0;
@@ -54,10 +54,13 @@ int main(){
         cout << "   4. Traspose a matrix.\n";
         cout << "   5. Inverse of a matrix.\n";
         cout << "   0. Exit.\n";
+        cout << ">> ";
         cin >> option;
+        cout << endl;
         switch (option)
         {
         case 1:
+        {
             int m1, n1, m2, n2;
             cout << "Enter the number of rows of matrix 1: ";
             cin >> m1;
@@ -80,16 +83,24 @@ int main(){
             M1->random_matrix();
             M2->random_matrix();
 
-            cout << "*********Following matrices are randomly generated*********\n"
-            cout << "---------Matrix 1---------\n"
+            cout << "*********Following matrices are randomly generated*********\n";
+            cout << "---------Matrix 1---------\n";
             M1->print();
-            cout << "---------Matrix 2---------\n"
+            cout << "---------Matrix 2---------\n";
             M2->print();
-            cout << "---------Sum---------\n"
+            cout << "---------Sum---------\n";
             (*M1 + *M2)->print();
+
+            delete M1,M2;
             break;
-        
+        }
         default:
+            if(option == 0){
+                cout << "Bye.\n";
+            }
+            else{
+                cout<<"An error occurred :/\n";
+            }
             break;
         }
 
