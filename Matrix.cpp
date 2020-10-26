@@ -56,6 +56,7 @@ void Matrix::print(){
             }
             cout << endl;
         }
+        cout << endl;
     }       
 }
 
@@ -84,8 +85,87 @@ Matrix* Matrix::inverse(){
         //following matrix is the aumented identity matrix
         Matrix *I = new Matrix(_nrows, _ncols);
 
+        int i = 0, j = 0, k = 0, n = 0;
+        double **mat = NULL;
+        double d = 0.0;
         
-
+        n = this->_ncols;
+        
+        // Extending the size of the matrix
+        mat = new double*[2*n];
+        for (i = 0; i < 2*n; ++i)
+        {
+            mat[i] = new double[2*n]();
+        }
+        
+        
+        //Copying the left side of extended matrix (this)
+        for(i = 0; i < n; ++i)
+        {
+            for(j = 0; j < n; ++j)
+            {
+                mat[i][j] = this->_A[i][j];
+            }
+        }
+        // Aumented identity matrix
+        for(i = 0; i < n; ++i)
+        {
+            for(j = 0; j < 2*n; ++j)
+            {
+                if(j == (i+n))
+                {
+                    mat[i][j] = 1;
+                }
+            }
+        }
+        
+        // Partial pivoting
+        for(i = n; i > 1; --i)
+        {
+            if(mat[i-1][1] < mat[i][1])
+            {
+                for(j = 0; j < 2*n; ++j)
+                {
+                    d = mat[i][j];
+                    mat[i][j] = mat[i-1][j];
+                    mat[i-1][j] = d;
+                }
+            }
+        }
+        
+        // Row reduced echelon form
+        for(i = 0; i < n; ++i)
+        {
+            for(j = 0; j < 2*n; ++j)
+            {
+                if(j != i)
+                {
+                    d = mat[j][i] / mat[i][i];
+                    for(k = 0; k < n*2; ++k)
+                    {
+                        mat[j][k] -= mat[i][k]*d;
+                    }
+                }
+            }
+        }
+        // reducing to identity matrix
+        for(i = 0; i < n; ++i)
+        {
+            d = mat[i][i];
+            for(j = 0; j < 2*n; ++j)
+            {
+                mat[i][j] = mat[i][j]/d;
+            }
+        }
+        
+        // Copying the aumented to the inverse
+        for(i=0; i < n; ++i)
+        {
+            for(j = n; j < 2*n; ++j)
+            {
+                I->_A[i][j-n] =  mat[i][j];
+            }
+        }
         return I;
     }
     

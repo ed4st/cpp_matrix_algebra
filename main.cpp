@@ -2,8 +2,8 @@
 
 int main(){
 
-    Matrix *m1 = new Matrix(2,3);
-    Matrix *m2 = new Matrix(3,4);
+    Matrix *m1 = new Matrix(2,2);
+    Matrix *m2 = new Matrix(2,2);
     
     //generating random matrices
     srand(time(NULL));
@@ -36,6 +36,8 @@ int main(){
     cout << "Traspose of matrix 2:\n";
     m2->traspose()->print();
 
+    cout << "Inverse of matrix 2:\n";
+    m2->inverse()->print();
     
 
     delete m2;

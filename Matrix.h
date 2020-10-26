@@ -34,17 +34,17 @@ class Matrix{
 
         //---------operators overloading-----------------
 
-        /*  folowwing operator can be used as
+        /*  following operator can be used as
             Matrix *m3 = *m1 + *m2; 
             whenever m1, m2 are dinamic*/
         Matrix* operator + (Matrix const &M); // sum of matrices
 
-        /*  folowwing operator can be used as
+        /*  following operator can be used as
             Matrix *m3 = *m1 - *m2; 
             whenever m1, m2 are dinamic */
         Matrix* operator - (Matrix const &M); // subtraction of matrices
         
-        /*  folowwing operator can be used as
+        /*  following operator can be used as
             Matrix *m3 = (*m1) * (*m2); 
             whenever m1, m2 are dinamic */
         Matrix* operator * (Matrix const &M); // subtraction of matrices
