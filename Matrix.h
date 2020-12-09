@@ -1,10 +1,20 @@
 #pragma once 
+#include <pthread.h>
+#include <cstdio>
+#include <cstdlib>
+#include <cmath>
+
 #include <iostream>
 #include <stdlib.h>     /* srand, rand */
+
+#define HAVE_STRUCT_TIMESPEC
+#define NTHREADS 4 //Warning!!! Use an even number
+
 
 using namespace std;
 
 class Matrix{
+    
     private:
         //------------Attributtes--------------------------
         int _nrows;
@@ -23,6 +33,7 @@ class Matrix{
         ~Matrix();     
 
         //-----------Methods-----------------------------
+        void zero_matrix();
         void random_matrix();
         void print();
         Matrix * traspose();
@@ -48,6 +59,13 @@ class Matrix{
             Matrix *m3 = (*m1) * (*m2); 
             whenever m1, m2 are dinamic */
         Matrix* operator * (Matrix const &M); // subtraction of matrices
-        
+
+        //---------operators parallelized-----------------
+
+        /*  following operator computes sum of matrices by
+            dividing matrix in NTHREADS blocks and adding them
+            all together*/
+        void* parallel_sum(void *args);
         
 }; 
+
