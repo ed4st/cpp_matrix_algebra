@@ -14,6 +14,7 @@
 #include "Matrix.h"
 #include "Matrix.cpp"
 #include <cmath>
+#include <iostream>
 #include <pthread.h>
 
 
@@ -35,9 +36,12 @@ int main(){
 
     M1->print();
     M2->print();
+    cout <<"suma:\n";
     (*M1 + *M2)->print();    
     parallel_sum(M1,M2)->print();
-
+    cout <<"Resta:\n";
+    (*M1 - *M2)->print();    
+    parallel_sub(M1,M2)->print();
     delete M1, M2;
 
 

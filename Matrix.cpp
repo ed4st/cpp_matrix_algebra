@@ -268,6 +268,27 @@ Matrix* Matrix::operator*(Matrix const &M){
 
 
 //---------------------operators parallelized-------------
+//parallelized sum implementations. The first one, makes it through 
+//one thread. The second one, makes it through all threads
+void* parallel_sum(void *sum_args);
+Matrix* parallel_sum(Matrix *M1, Matrix *M2);
+
+//parallelized subtraction implementations. The first one, makes it through 
+//one thread. The second one, makes it through all threads
+void* parallel_sub(void *sum_args);
+Matrix* parallel_sub(Matrix *M1, Matrix *M2);
+
+//parallelized multiplication implementations. The first one, makes it through 
+//one thread. The second one, makes it through all threads
+void* parallel_mul(void *mul_args);
+Matrix* parallel_mul(Matrix *M1, Matrix *M2);
+
+//parallelized inverse implementations. The first one, makes it through 
+//one thread. The second one, makes it through all threads
+void* parallel_inv(void *mul_args);
+Matrix* parallel_inv(Matrix *M1, Matrix *M2);
+
+
 struct SumArguments{
 	//int sup_row; inferior limit of rows of submatrix
 	//int inf_row; //superior limit of rows of submatrix
@@ -282,18 +303,13 @@ void* parallel_sum(void *sum_args){
     SumArguments *_sum_args = (SumArguments*) sum_args;
 
     //iterate over rows of current submatrix
-
-    
     double ** matrixAux = _sum_args->result->get_A();
-    pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
     for(int i=0; i<_sum_args->M1->get_nrows(); i++){
         
 
         for (int j =_sum_args->inf_col; j<=_sum_args->sup_col;j++) {
-            //pthread_mutex_lock(&mutex);
              matrixAux[i][j] = _sum_args->M1->get_A()[i][j] + _sum_args->M2->get_A()[i][j];
-            //pthread_mutex_unlock(&mutex);
         }
     }
     _sum_args->result->set_A(matrixAux);
@@ -347,3 +363,65 @@ Matrix* parallel_sum(Matrix *M1, Matrix *M2){
 }
 
 
+void* parallel_sub(void *sum_args){
+    SumArguments *_sum_args = (SumArguments*) sum_args;
+
+    //iterate over rows of current submatrix
+    double ** matrixAux = _sum_args->result->get_A();
+
+    for(int i=0; i<_sum_args->M1->get_nrows(); i++){
+        
+
+        for (int j =_sum_args->inf_col; j<=_sum_args->sup_col;j++) {
+             matrixAux[i][j] = _sum_args->M1->get_A()[i][j] - _sum_args->M2->get_A()[i][j];
+        }
+    }
+    _sum_args->result->set_A(matrixAux);
+    return NULL;
+}
+
+
+
+//Overloading parallel_sum function
+Matrix* parallel_sub(Matrix *M1, Matrix *M2){
+    int nrows = M1->get_nrows();
+    int ncols= M1->get_ncols();
+
+    Matrix *result = new Matrix(nrows,ncols);
+    //following matrix is initialized with zeroes entries, so
+    //it's easier to get access to this one in each thread
+    result->zero_matrix();
+
+
+    //initializing NTHREADS threads
+    pthread_t *thr = new pthread_t[NTHREADS];
+    SumArguments *sum_args = new SumArguments[NTHREADS];
+
+    int subint = floor(ncols/NTHREADS);
+
+	for(int i = 0; i < NTHREADS; i++){
+		if(i == NTHREADS-1){
+			sum_args[i].sup_col = ncols;
+		    sum_args[i].inf_col = subint*i;	
+		}else{
+			sum_args[i].inf_col = subint*i;
+			sum_args[i].sup_col = subint*(i+1);
+		}
+        sum_args[i].M1 = M1;
+        sum_args[i].M2 = M2;
+        sum_args[i].result= result;
+
+		pthread_attr_t attr;
+		pthread_attr_init(&attr);
+		pthread_create(&thr[i],&attr, parallel_sub, &sum_args[i]);
+	}
+
+    for(int i=0;i<NTHREADS;i++){
+		pthread_join(thr[i], NULL);
+	}
+
+
+    delete [] thr;
+	delete [] sum_args;
+    return result;
+}
