@@ -8,10 +8,12 @@
 #include <stdlib.h>     /* srand, rand */
 
 #define HAVE_STRUCT_TIMESPEC
-#define NTHREADS 4 //Warning!!! Use an even number
+#define NTHREADS 4 //Warning!!! Use a square number
 
 
 using namespace std;
+
+
 
 class Matrix{
     
@@ -28,6 +30,8 @@ class Matrix{
         int get_ncols();
         void set_ncols(int ncols);
 
+        double **get_A();
+        void set_A(double **_A);
         //----------constructors and destructors
         Matrix(int nrows, int ncols);
         ~Matrix();     
@@ -65,7 +69,7 @@ class Matrix{
         /*  following operator computes sum of matrices by
             dividing matrix in NTHREADS blocks and adding them
             all together*/
-        void* parallel_sum(void *args);
+        //void* parallel_sum(void *args);
         
 }; 
 

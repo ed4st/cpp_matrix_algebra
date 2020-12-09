@@ -16,6 +16,13 @@ void Matrix::set_nrows(int nrows){
     this->_nrows = nrows;
 }
 
+double** Matrix::get_A(){
+    return _A;
+}
+
+void Matrix::set_A(double** A){
+    this->_A = A;
+}
 //----------------constructors and destructors---------
 Matrix::Matrix(int nrows, int ncols){
     _nrows = nrows;
@@ -35,6 +42,16 @@ Matrix::~Matrix(){
 }
 
 //-----------------Methods------------------------------
+//here we genetate a matrix with 0 entries  
+void Matrix::zero_matrix(){
+    for (int i = 0; i < _nrows; i++)
+    {
+        for (int j = 0; j < _ncols; j++)
+        {
+            _A[i][j] = 0.0;
+        }    
+    }                            
+}
 
 //here we genetate a matrix with values between 0 and 99
 void Matrix::random_matrix(){
@@ -247,4 +264,43 @@ Matrix* Matrix::operator*(Matrix const &M){
     }
     return S;
 }
+
+
+
+//---------------------operators parallelized-------------
+struct SumArguments{
+	//int sup_row; inferior limit of rows of submatrix
+	//int inf_row; //superior limit of rows of submatrix
+    int sup_col; //inferior limit of columns of submatrix
+	int inf_col; //superior limit of columns of submatrix
+    Matrix* M1; //matrix to sum
+    Matrix* M2; //matrix to sum
+    Matrix* result; //matrix to sum
+};
+
+
+
+void* parallel_sum(void *sum_args){
+    SumArguments *_sum_args = (SumArguments*) sum_args;
+
+    //iterate over rows of current submatrix
+
+    
+    double ** matrixAux = _sum_args->result->get_A();
+    pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+
+    for(int i=0; i<_sum_args->M1->get_nrows(); i++){
+        
+
+        for (int j =_sum_args->inf_col; j<=_sum_args->sup_col;j++) {
+            //pthread_mutex_lock(&mutex);
+             matrixAux[i][j] = _sum_args->M1->get_A()[i][j] + _sum_args->M2->get_A()[i][j];
+            //pthread_mutex_unlock(&mutex);
+        }
+    }
+    _sum_args->result->set_A(matrixAux);
+    return NULL;
+}
+
+
 

@@ -12,9 +12,136 @@
 */
 
 #include "Matrix.h"
+#include "Matrix.cpp"
+#include <cmath>
+#include <pthread.h>
 
 int main(){
     
+    int nrows, ncols;
+    nrows = 5;
+    ncols = 6;
+    //creating matrices
+    Matrix *M1 = new Matrix(nrows,ncols);
+    Matrix *M2 = new Matrix(nrows,ncols);
+    Matrix *result = new Matrix(nrows,ncols);
+
+    //filling matrix randomly
+    srand(time(NULL));
+    M1->random_matrix();
+    M2->random_matrix();
+    result->zero_matrix();
+    
+    
+    pthread_t thr1, thr2;
+    SumArguments arg1, arg2;
+    
+    arg1.inf_col = 0;
+    arg1.sup_col = 2;
+    arg1.M1 = M1;
+    arg1.M2 = M2;
+    arg1.result = result;
+
+    arg2.inf_col = 3;
+    arg2.sup_col = 5;
+    arg2.M1 = M1;
+    arg2.M2 = M2;
+    arg2.result = result;
+
+    M1->print();
+    M2->print();
+    result->print();
+
+    pthread_attr_t attr;
+    pthread_attr_init(&attr);
+    pthread_create(&thr1,&attr, parallel_sum, &arg1);
+    pthread_attr_t attr2;
+    pthread_attr_init(&attr2);
+    pthread_create(&thr2,&attr2, parallel_sum, &arg2);
+    pthread_join(thr1,NULL);
+    pthread_join(thr2,NULL);
+    
+    result->print();
+    //Building a NxN matrix whose entries are pthreads_t objects
+    /*int N = sqrt(NTHREADS);
+    pthread_t** thr = new pthread_t *[N];
+    for (int i = 0; i < N; i++) {
+        thr[i] = new pthread_t[N];
+    }
+
+	SumArguments ** sum_args = new SumArguments*[N];
+    for (int i = 0; i < N; i++) {
+        sum_args[i] = new SumArguments[N];
+    }
+
+
+	int col_subint = floor(ncols/(N));
+    int row_subint = floor(nrows/(N));
+
+    for(int i = 0; i < N; i++){
+        for(int j = 0; j < N; j++){
+            if((i == N - 1) && (j == N - 1)){
+                sum_args[i][j].sup_row = N;
+                sum_args[i][j].sup_col = N;
+                sum_args[i][j].inf_row = row_subint*i;
+                sum_args[i][j].inf_col = col_subint*j;                
+            }else if((i == N - 1) && (j < N - 1)){
+                sum_args[i][j].sup_row = N;
+                sum_args[i][j].sup_col = col_subint*(j + 1);
+                sum_args[i][j].inf_row = row_subint*i;
+                sum_args[i][j].inf_col = col_subint*j;                
+            }else if((i < N - 1) && (j == N - 1)){
+                sum_args[i][j].sup_row = row_subint*(i + 1);
+                sum_args[i][j].sup_col = N;
+                sum_args[i][j].inf_row = row_subint*i;
+                sum_args[i][j].inf_col = col_subint*j;                
+            }else {
+                sum_args[i][j].sup_row = row_subint*(i + 1);
+                sum_args[i][j].sup_col = col_subint*(j + 1);
+                sum_args[i][j].inf_row = row_subint*i;
+                sum_args[i][j].inf_col = col_subint*j;   
+            }
+            sum_args[i][j].M1 = M1;
+            sum_args[i][j].M2 = M2;
+            sum_args[i][j].result = result;
+
+            pthread_attr_t attr;
+            pthread_attr_init(&attr);
+            pthread_create(&thr[i][j],&attr, parallel_sum, &sum_args[i][j]);
+        }
+	}
+
+    
+    
+    for(int i = 0; i < N; i++){
+        for(int j = 0; j < N; j++){
+            pthread_join(thr[i][j], NULL);
+	    }
+	}
+    
+    sum_args[0][0].M1->print();
+    
+    sum_args[0][0].M2->print();
+    
+    cout<<sum_args[0][1].inf_col;
+    
+    //sum_args[0][0].result->print();
+
+    //deleting instancies
+    
+    for (int i = 0; i < N; i++) {
+        delete [] thr[i];
+    }
+    delete [] thr;
+
+    for (int i = 0; i < N; i++) {
+        delete [] sum_args[i];
+    }
+    delete [] sum_args;*/
+
+
+
+    /*
     // Menu
     int option = 0;
     do
@@ -211,7 +338,7 @@ int main(){
         }
     } while (option != 6);
     
-    
+    */    
 
     return 0;
 }
