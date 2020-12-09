@@ -278,8 +278,6 @@ struct SumArguments{
     Matrix* result; //matrix to sum
 };
 
-
-
 void* parallel_sum(void *sum_args){
     SumArguments *_sum_args = (SumArguments*) sum_args;
 
@@ -302,5 +300,50 @@ void* parallel_sum(void *sum_args){
     return NULL;
 }
 
+
+
+//Overloading parallel_sum function
+Matrix* parallel_sum(Matrix *M1, Matrix *M2){
+    int nrows = M1->get_nrows();
+    int ncols= M1->get_ncols();
+
+    Matrix *result = new Matrix(nrows,ncols);
+    //following matrix is initialized with zeroes entries, so
+    //it's easier to get access to this one in each thread
+    result->zero_matrix();
+
+
+    //initializing NTHREADS threads
+    pthread_t *thr = new pthread_t[NTHREADS];
+    SumArguments *sum_args = new SumArguments[NTHREADS];
+
+    int subint = floor(ncols/NTHREADS);
+
+	for(int i = 0; i < NTHREADS; i++){
+		if(i == NTHREADS-1){
+			sum_args[i].sup_col = ncols;
+		    sum_args[i].inf_col = subint*i;	
+		}else{
+			sum_args[i].inf_col = subint*i;
+			sum_args[i].sup_col = subint*(i+1);
+		}
+        sum_args[i].M1 = M1;
+        sum_args[i].M2 = M2;
+        sum_args[i].result= result;
+
+		pthread_attr_t attr;
+		pthread_attr_init(&attr);
+		pthread_create(&thr[i],&attr, parallel_sum, &sum_args[i]);
+	}
+
+    for(int i=0;i<NTHREADS;i++){
+		pthread_join(thr[i], NULL);
+	}
+
+
+    delete [] thr;
+	delete [] sum_args;
+    return result;
+}
 
 
