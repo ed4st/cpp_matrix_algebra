@@ -29,19 +29,24 @@ int main(){
     
 
     //filling matrix randomly
-    srand(time(NULL));
+    //srand(time(NULL));
     M1->random_matrix();
     M2->random_matrix();
 
 
     M1->print();
     M2->print();
-    cout <<"suma:\n";
+    /*cout <<"suma:\n";
     (*M1 + *M2)->print();    
     parallel_sum(M1,M2)->print();
     cout <<"Resta:\n";
     (*M1 - *M2)->print();    
-    parallel_sub(M1,M2)->print();
+    parallel_sub(M1,M2)->print();*/
+    cout <<"Multiplicacion:\n";
+    (*M1 * *M2)->print();    
+    parallel_mul(M1,M2)->print();
+
+
     delete M1, M2;
 
 
