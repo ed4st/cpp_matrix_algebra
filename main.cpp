@@ -21,8 +21,8 @@
 int main(){
     
     int nrows, ncols;
-    nrows = 10;
-    ncols = 10;
+    nrows = 2;
+    ncols = 2;
     //creating matrices
     Matrix *M1 = new Matrix(nrows,ncols);
     Matrix *M2 = new Matrix(nrows,ncols);
@@ -35,17 +35,19 @@ int main(){
 
 
     M1->print();
-    M2->print();
-    /*cout <<"suma:\n";
+    /*M2->print();
+    cout <<"suma:\n";
     (*M1 + *M2)->print();    
     parallel_sum(M1,M2)->print();
     cout <<"Resta:\n";
     (*M1 - *M2)->print();    
-    parallel_sub(M1,M2)->print();*/
+    parallel_sub(M1,M2)->print();
     cout <<"Multiplicacion:\n";
     (*M1 * *M2)->print();    
-    parallel_mul(M1,M2)->print();
+    parallel_mul(M1,M2)->print();*/
 
+    M1->inverse()->print();
+    parallel_inv(M1)->print();
 
     delete M1, M2;
 

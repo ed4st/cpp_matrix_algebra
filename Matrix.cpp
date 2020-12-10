@@ -23,6 +23,10 @@ double** Matrix::get_A(){
 void Matrix::set_A(double** A){
     this->_A = A;
 }
+
+void Matrix::set_Aij(int i, int j, double val){
+    this->_A[i][j] = val;
+}
 //----------------constructors and destructors---------
 Matrix::Matrix(int nrows, int ncols){
     _nrows = nrows;
@@ -285,8 +289,8 @@ Matrix* parallel_mul(Matrix *M1, Matrix *M2);
 
 //parallelized inverse implementations. The first one, makes it through 
 //one thread. The second one, makes it through all threads
-void* parallel_inv(void *mul_args);
-Matrix* parallel_inv(Matrix *M1, Matrix *M2);
+void* parallel_inv(void *_inv_args);
+Matrix* parallel_inv(Matrix *M);
 
 
 struct SumArguments{
@@ -500,3 +504,162 @@ Matrix* parallel_mul(Matrix *M1, Matrix *M2){
 	delete [] sum_args;
     return result;
 }
+
+
+
+
+struct InverseArguments{
+	int sup_row; //inferior limit of rows of submatrix
+	int inf_row; //superior limit of rows of submatrix
+    //int sup_col; //inferior limit of columns of submatrix
+	//int inf_col; //superior limit of columns of submatrix
+    Matrix* M; //matrix to sum
+    Matrix* I; //Inverse
+    Matrix* E; //extended 2n x 2n matrix
+};
+
+void* parallel_inv(void *inv_args){
+    InverseArguments *_inv_args = (InverseArguments*) inv_args;
+
+    //iterate over rows of current submatrix
+    double ** matrixAux = _inv_args->I->get_A();
+
+    int i = 0, j = 0, k = 0, n = 0;
+        double **mat = _inv_args->E->get_A();
+        double d = 0.0;
+        
+        n = _inv_args->M->get_ncols();
+        
+        // Extending the size of the matrix
+        /*mat = new double*[2*n];
+        for (i = 0; i < 2*n; ++i)
+        {
+            mat[i] = new double[2*n]();
+        }
+        */
+        //Copying the left side of extended matrix (this)
+        pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+        for(i = _inv_args->inf_row; i < _inv_args->sup_row; ++i)
+        {
+            for(j = 0; j < n; ++j)
+            {
+                pthread_mutex_lock(&mutex);
+                _inv_args->E->set_Aij(i,j,_inv_args->M->get_A()[i][j]);
+                pthread_mutex_unlock(&mutex);
+                //mat[i][j] = _inv_args->M->get_A()[i][j];
+            }
+        }
+        // Aumented identity matrix
+        for(i = _inv_args->inf_row; i < _inv_args->sup_row; ++i)
+        {
+            for(j = 0; j < 2*n; ++j)
+            {
+                if(j == (i+n))
+                {
+                    pthread_mutex_lock(&mutex);
+                    _inv_args->E->set_Aij(i,j,1);
+                    pthread_mutex_unlock(&mutex);
+                }
+            }
+        }
+        
+        // Partial pivoting
+        for(i = n; i > 1; --i)
+        {
+            if(mat[i-1][1] < mat[i][1])
+            {
+                for(j = 0; j < 2*n; ++j)
+                {
+                    d = mat[i][j];
+                    mat[i][j] = mat[i-1][j];
+                    mat[i-1][j] = d;
+                }
+            }
+        }
+        
+        // Row reduced echelon form
+        for(i = 0; i < n; ++i)
+        {
+            for(j = 0; j < 2*n; ++j)
+            {
+                if(j != i)
+                {
+                    d = mat[j][i] / mat[i][i];
+                    for(k = 0; k < n*2; ++k)
+                    {
+                        mat[j][k] -= mat[i][k]*d;
+                    }
+                }
+            }
+        }
+        // reducing to identity matrix
+        for(i = 0; i < n; ++i)
+        {
+            d = mat[i][i];
+            for(j = 0; j < 2*n; ++j)
+            {
+                mat[i][j] = mat[i][j]/d;
+            }
+        }
+        
+        // Copying the aumented to the inverse
+        for(i=0; i < n; ++i)
+        {
+            for(j = n; j < 2*n; ++j)
+            {
+                matrixAux[i][j-n] =  mat[i][j];
+            }
+        }
+        _inv_args->I->set_A(matrixAux);
+    return NULL;
+}
+
+
+
+//Overloading parallel_sum function
+Matrix* parallel_inv(Matrix *M){
+    int nrows = M->get_nrows();
+    int ncols= M->get_ncols();
+
+    Matrix *result = new Matrix(nrows,ncols);
+    //following matrix is initialized with zeroes entries, so
+    //it's easier to get access to this one in each thread
+    result->zero_matrix();
+    //we also create an extended martix to copy values
+    Matrix * E = new Matrix(2*ncols, 2*ncols);
+    E->zero_matrix();
+
+    //initializing NTHREADS threads
+    pthread_t *thr = new pthread_t[NTHREADS];
+    
+    InverseArguments *inv_args = new InverseArguments[NTHREADS];
+
+    int subint = floor(ncols/NTHREADS);
+
+	for(int i = 0; i < NTHREADS; i++){
+		if(i == NTHREADS-1){
+			inv_args[i].sup_row = ncols;
+		    inv_args[i].inf_row = subint*i;	
+		}else{
+			inv_args[i].inf_row = subint*i;
+			inv_args[i].sup_row = subint*(i+1);
+		}
+        inv_args[i].M = M;
+        inv_args[i].E = E;
+        inv_args[i].I= result;
+        result = M->inverse();
+		pthread_attr_t attr;
+		pthread_attr_init(&attr);
+		pthread_create(&thr[i],&attr, parallel_inv, &inv_args[i]);
+	}
+
+    for(int i=0;i<NTHREADS;i++){
+		pthread_join(thr[i], NULL);
+	}
+    
+
+    delete [] thr;
+	delete [] inv_args;
+    return result;
+}
+

@@ -32,6 +32,8 @@ class Matrix{
 
         double **get_A();
         void set_A(double **_A);
+
+        void set_Aij(int i, int j, double val);
         //----------constructors and destructors
         Matrix(int nrows, int ncols);
         ~Matrix();     
