@@ -243,7 +243,7 @@ Matrix* Matrix::operator*(Matrix const &M){
     if(this->_ncols == M._nrows){
         for (int i = 0; i < _nrows; i++)
         {
-            for (int j = 0; j < M._ncols ; j++)
+            for (int j = 0; j < M._ncols; j++)
             {
                 //definig the sum as usual column-row product 
                 double sum =0;
@@ -369,9 +369,9 @@ void* parallel_sub(void *sum_args){
     //iterate over rows of current submatrix
     double ** matrixAux = _sum_args->result->get_A();
 
-     for(int i=0; i<_sum_args->M1->get_nrows(); i++){
+    for(int i=0; i<_sum_args->M1->get_nrows(); i++){
         for (int j =_sum_args->inf_col; j<=_sum_args->sup_col;j++) {
-             matrixAux[i][j] = _sum_args->M1->get_A()[i][j] - _sum_args->M2->get_A()[i][j];
+            
         }
     }
     _sum_args->result->set_A(matrixAux);
@@ -500,7 +500,3 @@ Matrix* parallel_mul(Matrix *M1, Matrix *M2){
 	delete [] sum_args;
     return result;
 }
-
-
-
-
