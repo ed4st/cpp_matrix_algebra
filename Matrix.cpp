@@ -375,7 +375,7 @@ void* parallel_sub(void *sum_args){
 
     for(int i=0; i<_sum_args->M1->get_nrows(); i++){
         for (int j =_sum_args->inf_col; j<=_sum_args->sup_col;j++) {
-            
+            matrixAux[i][j] = _sum_args->M1->get_A()[i][j] - _sum_args->M2->get_A()[i][j];
         }
     }
     _sum_args->result->set_A(matrixAux);
