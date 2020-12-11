@@ -1,0 +1,228 @@
+\documentclass{article}\usepackage[]{graphicx}\usepackage[]{color}
+% maxwidth is the original width if it is less than linewidth
+% otherwise use linewidth (to make sure the graphics do not exceed the margin)
+\makeatletter
+\def\maxwidth{ %
+  \ifdim\Gin@nat@width>\linewidth
+    \linewidth
+  \else
+    \Gin@nat@width
+  \fi
+}
+\makeatother
+
+\definecolor{fgcolor}{rgb}{0.345, 0.345, 0.345}
+\newcommand{\hlnum}[1]{\textcolor[rgb]{0.686,0.059,0.569}{#1}}%
+\newcommand{\hlstr}[1]{\textcolor[rgb]{0.192,0.494,0.8}{#1}}%
+\newcommand{\hlcom}[1]{\textcolor[rgb]{0.678,0.584,0.686}{\textit{#1}}}%
+\newcommand{\hlopt}[1]{\textcolor[rgb]{0,0,0}{#1}}%
+\newcommand{\hlstd}[1]{\textcolor[rgb]{0.345,0.345,0.345}{#1}}%
+\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.161,0.373,0.58}{\textbf{#1}}}%
+\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.69,0.353,0.396}{#1}}%
+\newcommand{\hlkwc}[1]{\textcolor[rgb]{0.333,0.667,0.333}{#1}}%
+\newcommand{\hlkwd}[1]{\textcolor[rgb]{0.737,0.353,0.396}{\textbf{#1}}}%
+\let\hlipl\hlkwb
+
+\usepackage{framed}
+\makeatletter
+\newenvironment{kframe}{%
+ \def\at@end@of@kframe{}%
+ \ifinner\ifhmode%
+  \def\at@end@of@kframe{\end{minipage}}%
+  \begin{minipage}{\columnwidth}%
+ \fi\fi%
+ \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
+ \colorbox{shadecolor}{##1}\hskip-\fboxsep
+     % There is no \\@totalrightmargin, so:
+     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
+ \MakeFramed {\advance\hsize-\width
+   \@totalleftmargin\z@ \linewidth\hsize
+   \@setminipage}}%
+ {\par\unskip\endMakeFramed%
+ \at@end@of@kframe}
+\makeatother
+
+\definecolor{shadecolor}{rgb}{.97, .97, .97}
+\definecolor{messagecolor}{rgb}{0, 0, 0}
+\definecolor{warningcolor}{rgb}{1, 0, 1}
+\definecolor{errorcolor}{rgb}{1, 0, 0}
+\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
+
+\usepackage{alltt}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{enumerate}% http://ctan.org/pkg/enumerate
+\usepackage[thinc]{esdiff}	
+\usepackage{amsfonts}
+\title{Reporte paralelización de algoritmos\\ Programación y Análisis de Algoritmos}
+\author{Edgar Steven Baquero Acevedo}
+\date{Diciembre 10, 2020}
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\begin{document}
+	
+\maketitle
+
+\section{Algunas consideraciones preliminares}
+\subsection*{Sobre los recursos computacionales}
+Se considera necesario considerar algunas propiedades físicas del computador donde se compila y ejecutan los algoritmos:
+\begin{itemize}
+\item 	\textbf{OS:} \texttt{Kernel: 5.8.18-1-MANJARO x86\_64 bits: 64 Desktop: GNOME 3.38.1 
+	Distro: Manjaro Linux}
+\item	\textbf{CPU:} \texttt{ Info: Dual Core model: Intel Core i5-3317U bits: 64 type: MT MCP}
+\item	\textbf{Dispositivos:} 
+\begin{itemize}
+	\item \texttt{vendor: PNY model: CS900 240GB SSD size: 223.57 GiB}\linebreak(Ruta del sistema operativo)
+	\item \texttt{vendor: SanDisk model: SSD i100 24GB size: 22.37 GiB} \linebreak(Memoria Swap)
+	\item \texttt{Memory: 7.48 GiB} (Memoria RAM)
+	\item \texttt{Speed: 862 MHz min/max: 800/2600 MHz Core speeds (MHz): 1: 921 2: 1450 
+		3: 1048 4: 1117} (Núcleos)
+\end{itemize}
+\end{itemize}
+\newpage
+\subsection*{Sobre los presets de ejecución}
+También se considera necesario saber sobre las configuraciones antes de la compilación de los algoritmos. Entre otras, mencionamos las siguientes:
+\begin{itemize}
+	\item El número de threads que se usa en cada ejecución es 4, pues es el número de núcleos de procesamiento mencionados anteriormente.
+	\item Se ejecutó en un promedio de 50 repeticiones con distintos tamaños para cada algoritmo (suma, resta, multiplicación e inversa) en paralelo y en secuencial.
+	\item Los tamaños de matrices que se consideraron están entre $50\times 50$ y \linebreak $5000\times5000$, mientras que para la multiplicación e inversa de matrices, se consideraron tamaños comprendidos entre $10\times 10$ y $500\times 500$.
+	\item Sobre la anterior entrega, se desarrolló sobre un paradigma orientado a objetos, considerando el correcto encapsulamiento de los atributos, que no fueron considerados correctamente en la anterior entrega, a pesar de su correcta ejecición.
+	\item Con el fin de hacer el estudio y las gráficas  simples, se consideraron matrices cuadradas en todos los casos. Sin embargo, cabe aclarar que el menú de uso considera matrices de cualquier tamaño.
+\end{itemize}
+\section{Una revisión parcial de los algoritmos}
+Revisamos algunos aspectos que nos ayudan a entender mejor cómo se paralelizaron los algoritmos.
+\subsection*{Suma}
+Los hilos que se consideran para la suma de las matrices, usan como hecho que se pueden particionar por bloques. Gráficamente, podemos ver cómo funciona esto para dos matrices genéricas $A,B\in M_{m\times n}(\mathbb{R})$:
+\[ A = \begin{pmatrix}
+	\text{Hilo A}_1 & \text{Hilo A}_2&	\text{Hilo A}_3& \text{Hilo A}_4
+\end{pmatrix}
+\]
+\[ B = \begin{pmatrix}
+	\text{Hilo B}_1 & \text{Hilo B}_2&	\text{Hilo B}_3& \text{Hilo B}_4
+\end{pmatrix},
+\]
+que es análogo a considerar una partición por  bloques de la forma:
+\[ 
+\begin{pmatrix}
+	\text{Hilo}_1 & \text{Hilo}_2\\\
+	\text{Hilo}_3& \text{Hilo}_4
+\end{pmatrix},
+\]
+y mucho más sencillo de implementar.
+
+\subsection*{Resta}
+Se considera una partición por bloques igual a la que se mostró para la suma.
+\subsection*{Multiplicación}
+Supongamos que el producto matricial $A\cdot B = C$ está bien definido, así, la partición que se considera para paralelizar el algoritmo de suma, está dada por:
+
+\begin{equation*}
+	A\cdot B =
+	\begin{pmatrix}
+		\text{Hilo A}_1\\ 
+		\text{Hilo A}_2\\
+		\text{Hilo A}_3\\
+		\text{Hilo A}_4
+	\end{pmatrix}\cdot B = 
+	\begin{pmatrix}
+	\text{Hilo A}_1\cdot B\\ 
+	\text{Hilo A}_2\cdot B\\
+	\text{Hilo A}_3\cdot B\\
+	\text{Hilo A}_4\cdot B  
+	\end{pmatrix}=
+	\begin{pmatrix}
+		\text{Hilo C}_1\\ 
+		\text{Hilo C}_2\\
+		\text{Hilo C}_3\\
+		\text{Hilo C}_4
+	\end{pmatrix} = C,
+\end{equation*}
+que de nuevo, es equivalente a considerar un producto matricial por bloques, y es mucho más sencillo de implementar.
+\subsection*{Inversa}
+Para este caso, la paralelización considerada se usa sobre la copia de datos entre las matrices. Por ejemplo, el algoritmo implementado, considera una expansión de una matriz, cuyos datos tienen que ser copiados de nuevo en esta matriz extendida. Así, es pertinente procurar optimizar los algoritmos en su copiado, pues la reducción por \textit{Gauss-Jordan}
+requiere el uso completo de la matriz.
+\section{Comparaciones}
+Con el fin de hacer más ameno el entendimiento de los procesos de ejecución paralelos, usamos el sofware \texttt{R} para recopilar y visualizar los datos generados, los cuales contienen los tiempos en formato \texttt{csv} para distintos tamaños de matrices.
+\subsection*{Suma}
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{suma} \hlkwb{=} \hlkwd{read.csv}\hlstd{(}\hlstr{"/run/media/ed4st/Data/Documentos/Master/semestre1/ProgAnalgo/tareas/proyecto1/cpp_matrix_algebra/sum_records.csv"}\hlstd{)}
+\hlkwd{plot}\hlstd{(suma}\hlopt{$}\hlstd{size, suma}\hlopt{$}\hlstd{seq_time,} \hlkwc{type} \hlstd{=} \hlstr{"l"}\hlstd{,}
+     \hlkwc{col} \hlstd{=} \hlstr{"red"}\hlstd{,} \hlkwc{main} \hlstd{=} \hlstr{"Comparación algoritmo de suma"}\hlstd{,}
+     \hlkwc{xlab} \hlstd{=} \hlstr{"tamaño de la matriz"}\hlstd{,} \hlkwc{ylab} \hlstd{=} \hlstr{"tiempo (microsegundos)"}\hlstd{)}
+\hlkwd{lines}\hlstd{(suma}\hlopt{$}\hlstd{size, suma}\hlopt{$}\hlstd{par_time,} \hlkwc{col} \hlstd{=} \hlstr{"blue"}\hlstd{)}
+
+\hlkwd{legend}\hlstd{(}\hlnum{1}\hlstd{,} \hlnum{250000}\hlstd{,} \hlkwc{legend}\hlstd{=}\hlkwd{c}\hlstd{(}\hlstr{"Secuencial"}\hlstd{,} \hlstr{"Paralelo"}\hlstd{),}
+       \hlkwc{col}\hlstd{=}\hlkwd{c}\hlstd{(}\hlstr{"red"}\hlstd{,} \hlstr{"blue"}\hlstd{),} \hlkwc{lty} \hlstd{=} \hlnum{1}\hlopt{:}\hlnum{1}\hlstd{,} \hlkwc{cex}\hlstd{=}\hlnum{0.8}\hlstd{)}
+\end{alltt}
+\end{kframe}
+\includegraphics[width=\maxwidth]{figure/unnamed-chunk-1-1} 
+
+\end{knitrout}
+Como se puede observar, en este caso, el algoritmo secuencial sigue siendo sustancialmente mejor que el paralelo. Es muy raro el caso donde el paralelo supera al secuencial.
+
+\subsection*{Resta}
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{resta} \hlkwb{=} \hlkwd{read.csv}\hlstd{(}\hlstr{"/run/media/ed4st/Data/Documentos/Master/semestre1/ProgAnalgo/tareas/proyecto1/cpp_matrix_algebra/sub_records.csv"}\hlstd{)}
+\hlkwd{plot}\hlstd{(resta}\hlopt{$}\hlstd{size, resta}\hlopt{$}\hlstd{seq_time,} \hlkwc{type} \hlstd{=} \hlstr{"l"}\hlstd{,}
+     \hlkwc{col} \hlstd{=} \hlstr{"red"}\hlstd{,} \hlkwc{main} \hlstd{=} \hlstr{"Comparación algoritmo de resta"}\hlstd{,}
+     \hlkwc{xlab} \hlstd{=} \hlstr{"tamaño de la matriz"}\hlstd{,} \hlkwc{ylab} \hlstd{=} \hlstr{"tiempo (microsegundos)"}\hlstd{)}
+\hlkwd{lines}\hlstd{(resta}\hlopt{$}\hlstd{size, resta}\hlopt{$}\hlstd{par_time,} \hlkwc{col} \hlstd{=} \hlstr{"blue"}\hlstd{)}
+
+\hlkwd{legend}\hlstd{(}\hlnum{1}\hlstd{,} \hlnum{2000000}\hlstd{,} \hlkwc{legend}\hlstd{=}\hlkwd{c}\hlstd{(}\hlstr{"Secuencial"}\hlstd{,} \hlstr{"Paralelo"}\hlstd{),}
+       \hlkwc{col}\hlstd{=}\hlkwd{c}\hlstd{(}\hlstr{"red"}\hlstd{,} \hlstr{"blue"}\hlstd{),} \hlkwc{lty} \hlstd{=} \hlnum{1}\hlopt{:}\hlnum{1}\hlstd{,} \hlkwc{cex}\hlstd{=}\hlnum{0.8}\hlstd{)}
+\end{alltt}
+\end{kframe}
+\includegraphics[width=\maxwidth]{figure/unnamed-chunk-2-1} 
+
+\end{knitrout}
+En este caso, es posible detallar que el algoritmo paralelo mejora su tiempo en algunas ejecuciones.
+
+\subsection*{Multiplicación}
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{multiplicacion}\hlkwb{=} \hlkwd{read.csv}\hlstd{(}\hlstr{"/run/media/ed4st/Data/Documentos/Master/semestre1/ProgAnalgo/tareas/proyecto1/cpp_matrix_algebra/mul_records.csv"}\hlstd{)}
+\hlkwd{plot}\hlstd{(multiplicacion}\hlopt{$}\hlstd{size, multiplicacion}\hlopt{$}\hlstd{seq_time,} \hlkwc{type} \hlstd{=} \hlstr{"l"}\hlstd{,}
+     \hlkwc{col} \hlstd{=} \hlstr{"red"}\hlstd{,} \hlkwc{main} \hlstd{=} \hlstr{"Comparación algoritmo de Multiplicación"}\hlstd{,}
+     \hlkwc{xlab} \hlstd{=} \hlstr{"tamaño de la matriz"}\hlstd{,} \hlkwc{ylab} \hlstd{=} \hlstr{"tiempo (microsegundos)"}\hlstd{)}
+\hlkwd{lines}\hlstd{(multiplicacion}\hlopt{$}\hlstd{size, multiplicacion}\hlopt{$}\hlstd{par_time,} \hlkwc{col} \hlstd{=} \hlstr{"blue"}\hlstd{)}
+
+\hlkwd{legend}\hlstd{(}\hlnum{1}\hlstd{,} \hlnum{1300000}\hlstd{,} \hlkwc{legend}\hlstd{=}\hlkwd{c}\hlstd{(}\hlstr{"Secuencial"}\hlstd{,} \hlstr{"Paralelo"}\hlstd{),}
+       \hlkwc{col}\hlstd{=}\hlkwd{c}\hlstd{(}\hlstr{"red"}\hlstd{,} \hlstr{"blue"}\hlstd{),} \hlkwc{lty} \hlstd{=} \hlnum{1}\hlopt{:}\hlnum{1}\hlstd{,} \hlkwc{cex}\hlstd{=}\hlnum{0.8}\hlstd{)}
+\end{alltt}
+\end{kframe}
+\includegraphics[width=\maxwidth]{figure/unnamed-chunk-3-1} 
+
+\end{knitrout}
+Notamos una tendencia a mejorar el algoritmo paralelo a medida que el tamaño de la matriz se hace mayor.
+
+\subsection*{Inversa}
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{inversa} \hlkwb{=} \hlkwd{read.csv}\hlstd{(}\hlstr{"/run/media/ed4st/Data/Documentos/Master/semestre1/ProgAnalgo/tareas/proyecto1/cpp_matrix_algebra/inv_records.csv"}\hlstd{)}
+\hlkwd{plot}\hlstd{(inversa}\hlopt{$}\hlstd{size, inversa}\hlopt{$}\hlstd{seq_time,} \hlkwc{type} \hlstd{=} \hlstr{"l"}\hlstd{,}
+     \hlkwc{col} \hlstd{=} \hlstr{"red"}\hlstd{,} \hlkwc{main} \hlstd{=} \hlstr{"Comparación algoritmo de Inversa"}\hlstd{,}
+     \hlkwc{xlab} \hlstd{=} \hlstr{"tamaño de la matriz"}\hlstd{,} \hlkwc{ylab} \hlstd{=} \hlstr{"tiempo (microsegundos)"}\hlstd{)}
+\hlkwd{lines}\hlstd{(inversa}\hlopt{$}\hlstd{size, inversa}\hlopt{$}\hlstd{par_time,} \hlkwc{col} \hlstd{=} \hlstr{"blue"}\hlstd{)}
+
+\hlkwd{legend}\hlstd{(}\hlnum{1}\hlstd{,} \hlnum{2500000}\hlstd{,} \hlkwc{legend}\hlstd{=}\hlkwd{c}\hlstd{(}\hlstr{"Secuencial"}\hlstd{,} \hlstr{"Paralelo"}\hlstd{),}
+       \hlkwc{col}\hlstd{=}\hlkwd{c}\hlstd{(}\hlstr{"red"}\hlstd{,} \hlstr{"blue"}\hlstd{),} \hlkwc{lty} \hlstd{=} \hlnum{1}\hlopt{:}\hlnum{1}\hlstd{,} \hlkwc{cex}\hlstd{=}\hlnum{0.8}\hlstd{)}
+\end{alltt}
+\end{kframe}
+\includegraphics[width=\maxwidth]{figure/unnamed-chunk-4-1} 
+
+\end{knitrout}
+Es posible ver que indudablemente, el algoritmo secuencial es mejor que el algoritmo paralelo.
+\newpage
+\section{Conclusiones}
+Pudimos obsevar gráficamente cómo se comportan las implementaciones planteadas. Para los algoritmos paralelos de suma y resta, que en principio son iguales, se vio una pequeña diferencia en los tiempo de ejecución para tamaños grandes; esto es posible, ya que la sobrecarga del operador binario de suma y resta, con el que cuenta el compilador, es un operador que se implementa sobre operaciones bit a bit.
+
+Sobre el algoritmo de multiplicación, se puede observar una mejoría en los tiempos de ejecución, esto, puesto que los hilos representan una optimización en los distintos núcleos físicos del procesador.
+
+Sobre el algoritmo de inversa, vemos que se debería intentar paralelizar otras secciones planteadas en el algoritmo de inversa secuencial. Razón de los resultados mostrados, se debe también a incorrecta repartición de los límites de los hilos, ya que, como la paralelización, que en principio se consideró de libre escogencia, no fue la mejor. Otra razón, con menor peso, fue la falta de tiempo para explorar otras opciones de paralelización del mismo.
+
+Cabe resaltar también, que parte del trabajo realizado, se hizo con base en lo visto en clase, y dado que el tema fue introductorio, no se alcanzó a observar otras funcionalidades que ofrece la librería \texttt{pthread}.
+\end{document}
