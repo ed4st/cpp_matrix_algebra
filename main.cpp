@@ -4,10 +4,14 @@
 *    Matrix algebra: This code is made with final purpose of 
 *                    compute basic matrix algebra via cpp
 *                    implementation.
+*                    You can see the changes respect to first version
+*                    in my github profile (parallel branch): 
+*                       https://github.com/ed4st/cpp_matrix_algebra
+*
 *
 *    If you are on a Linux OS based system, you can compile and run via
 *    following command in terminal:
-*    >> g++ *.cpp -o exe && ./exe
+*    >> g++ main.cpp -o exe -pthread && ./exe  
 *
 */
 
@@ -19,9 +23,10 @@
 #include <fstream> //save the time execution of each program
 #include <chrono> //measures the time of a function
 using namespace std::chrono;
-//following functions meausres the execution time of algorithms
+
+//following functions measures the execution time of algorithms
 //developed here, by saving a csv file whose entries contain the
-//comparative times in sequential-paralllel per size record
+//comparative times in sequential-parallel per size record
 void timeit_sum();
 void timeit_sub(); 
 void timeit_mul();
@@ -39,8 +44,8 @@ int main(){
     //the example is made, because there is an error that couldn't
     //be fixed when we initialize a matrix with dimensions greater than 4
     //with varibales. If we enter the values by hand, it works correctly.
-    //In this case, I entered two 6x6 matrices, but you can modify it to see that
-    //logic of algorithms is correct.
+    //In this case, I entered two 6x6 matrices, but you can modify it to verify
+    //that logic of algorithms is correct.
 
     //creating matrices
     Matrix *M1 = new Matrix(6,6);
